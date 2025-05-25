@@ -139,14 +139,27 @@
         );
 
         const headers = rows[0];
+        const columnCount = headers.length;
+
         const data = rows.slice(1).map(row => {
-          const newRow = [...row];
-          newRow.forEach((cell, i) => {
-            if (typeof cell === 'string' && cell.startsWith('http')) {
-              newRow[i] = `<a href="${cell}" target="_blank" class="download-link">Download</a>`;
-            }
-          });
-          return newRow;
+          let cleanRow = [...row];
+
+          // Pad missing columns
+          while (cleanRow.length < columnCount) {
+            cleanRow.push('');
+          }
+
+          // Trim extra columns
+          if (cleanRow.length > columnCount) {
+            cleanRow = cleanRow.slice(0, columnCount);
+          }
+
+          // Make links clickable
+          cleanRow = cleanRow.map(cell =>
+            cell.startsWith('http') ? `<a href="${cell}" target="_blank" class="download-link">Download</a>` : cell
+          );
+
+          return cleanRow;
         });
 
         const theadHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
@@ -160,7 +173,7 @@
           dom: 't<"bottom-controls"li>p'
         });
 
-        // Conditional search if enough columns exist
+        // Custom search fields for known columns
         if (headers.length >= 5) {
           $('#searchParticulars').on('keyup', function () {
             table.column(1).search(this.value).draw();
