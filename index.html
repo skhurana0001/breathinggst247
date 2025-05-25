@@ -77,7 +77,6 @@
       display: none !important;
     }
 
-    /* ✅ ALIGN bottom controls properly */
     .bottom-controls {
       display: flex;
       justify-content: space-between;
@@ -93,14 +92,12 @@
       line-height: 1.5;
     }
 
-    /* ✅ Center pagination */
     .dataTables_paginate {
       text-align: center !important;
       width: 100%;
       margin-top: 15px;
     }
 
-    /* Optional: Increase Date column width */
     #gstTable td:nth-child(5), 
     #gstTable th:nth-child(5) {
       min-width: 120px;
@@ -167,9 +164,17 @@
             cleanRow = cleanRow.slice(0, columnCount);
           }
 
-          cleanRow = cleanRow.map(cell =>
-            cell.startsWith('http') ? `<a href="${cell}" target="_blank" class="download-link">Download</a>` : cell
-          );
+          cleanRow = cleanRow.map((cell, index) => {
+            const header = headers[index];
+            if (cell.startsWith('http')) {
+              if (header === 'Summary') {
+                return `<a href="${cell}" target="_blank" class="download-link">Read Here</a>`;
+              } else if (header === 'Official Document') {
+                return `<a href="${cell}" target="_blank" class="download-link">Download</a>`;
+              }
+            }
+            return cell;
+          });
 
           return cleanRow;
         });
@@ -187,7 +192,7 @@
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
           dom: 't<"bottom-controls"l i>p',
           drawCallback: function () {
-            $('.dataTables_paginate').appendTo('.bottom-controls'); // move pagination inside flex container
+            $('.dataTables_paginate').appendTo('.bottom-controls');
           }
         });
 
