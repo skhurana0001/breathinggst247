@@ -21,7 +21,23 @@
     h3 {
       text-align: center;
       color: #555;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    .social-links a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
     #customSearch {
@@ -64,27 +80,25 @@
       white-space: nowrap;
     }
 
-    /* Move "Show entries" to bottom-left */
-    div.dataTables_length {
-      position: absolute;
-      bottom: 0;
-      left: 10px;
+    /* Bottom controls layout */
+    .dataTables_wrapper .dataTables_length,
+    .dataTables_wrapper .dataTables_info {
+      display: inline-block;
+      margin-top: 20px;
+    }
+
+    .bottom-controls {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 20px;
+      margin-top: 20px;
       margin-bottom: 10px;
     }
 
-    div.dataTables_info {
-      padding-left: 150px;
-      margin-top: 10px;
-    }
-
-    /* Social links */
-    .social-links {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      display: flex;
-      gap: 20px;
-      align-items: center;
+    /* Ensure default search is gone */
+    div.dataTables_filter {
+      display: none !important;
     }
   </style>
 </head>
@@ -94,15 +108,15 @@
   <h3>GST With CA Shubham Khurana</h3>
 
   <div class="social-links">
-    <a href="https://www.tinyurl.com/caskhurana" target="_blank" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 5px;">
+    <a href="https://www.tinyurl.com/caskhurana" target="_blank">
       <img src="https://img.icons8.com/color/24/000000/whatsapp--v1.png" alt="WhatsApp" width="20" height="20">
       <span>Follow the WhatsApp Channel</span>
     </a>
-    <a href="https://www.x.com/caskhurana" target="_blank" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 5px;">
+    <a href="https://www.x.com/caskhurana" target="_blank">
       <img src="https://img.icons8.com/ios-filled/24/000000/twitterx--v1.png" alt="X Logo" width="20" height="20">
       <span>Follow on X</span>
     </a>
-    <a href="https://www.linkedin.com/in/caskhurana" target="_blank" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 5px;">
+    <a href="https://www.linkedin.com/in/caskhurana" target="_blank">
       <img src="https://img.icons8.com/color/24/000000/linkedin.png" alt="LinkedIn" width="20" height="20">
       <span>Follow on LinkedIn</span>
     </a>
@@ -150,10 +164,10 @@
         const table = $('#gstTable').DataTable({
           pageLength: 10,
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-          dom: 'lftip', // removed global search box
+          dom: '<"bottom-controls"l i>tp', // Show length & info in same line
           columnDefs: [
             {
-              targets: 4, // Adjust if date column index differs
+              targets: 4, // Adjust if Date is at another index
               width: '150px'
             }
           ],
