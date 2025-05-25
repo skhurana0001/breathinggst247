@@ -73,16 +73,19 @@
       text-decoration: underline;
     }
 
+    /* Resize Date column */
     #gstTable th:nth-child(5),
     #gstTable td:nth-child(5) {
       min-width: 150px;
       white-space: nowrap;
     }
 
+    /* Remove default DataTables search bar */
     div.dataTables_filter {
       display: none !important;
     }
 
+    /* Align bottom controls left, in single row */
     .dataTables_wrapper .bottom-controls {
       display: flex;
       justify-content: flex-start;
@@ -129,16 +132,17 @@
 
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
-
   <script>
     const sheetURL = 'https://docs.google.com/spreadsheets/d/12qZH5ziAay-l2jyOqg-4jcCivKvaJtLumwgTBn-Ipr0/gviz/tq?tqx=out:csv';
 
     fetch(sheetURL)
       .then(res => res.text())
       .then(csv => {
-        const parsed = Papa.parse(csv, { header: false });
-        const rows = parsed.data.filter(row => row.length && row.some(cell => cell.trim() !== ''));
+        const rows = csv.trim().split('\n').map(row =>
+          row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell =>
+            cell.replace(/^"|"$/g, '')
+          )
+        );
 
         const headers = rows[0];
         const body = rows.slice(1).map(row => {
@@ -152,10 +156,7 @@
         });
 
         let tableHTML = '<thead><tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr></thead>';
-        tableHTML += '<tbody>' + body.map(row => {
-          const cells = row.map(cell => `<td>${cell || ''}</td>`).join('');
-          return `<tr>${cells}</tr>`;
-        }).join('') + '</tbody>';
+        tableHTML += '<tbody>' + body.map(row => '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>').join('') + '</tbody>';
 
         $('#gstTable').html(tableHTML);
 
@@ -164,8 +165,14 @@
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
           dom: 't<"bottom-controls"li>p',
           columnDefs: [
-            { targets: 4, width: '150px' },
-            { targets: [6, 7], orderable: false } // Disable sorting for last 2 columns
+            {
+              targets: 4,
+              width: '150px'
+            },
+            {
+              targets: [6, 7], // Remove sort for last two columns
+              orderable: false
+            }
           ],
           initComplete: function () {
             $('#searchParticulars').on('keyup', function () {
@@ -184,5 +191,6 @@
         });
       });
   </script>
+
 </body>
 </html>
