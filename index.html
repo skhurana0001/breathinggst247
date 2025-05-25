@@ -98,7 +98,7 @@
       margin-top: 15px;
     }
 
-    #gstTable td:nth-child(5),
+    #gstTable td:nth-child(5), 
     #gstTable th:nth-child(5) {
       min-width: 120px;
     }
@@ -155,28 +155,30 @@
 
         const data = rows.slice(1).map(row => {
           let cleanRow = [...row];
-
-          while (cleanRow.length < columnCount) {
-            cleanRow.push('');
-          }
-
-          if (cleanRow.length > columnCount) {
-            cleanRow = cleanRow.slice(0, columnCount);
-          }
-
-          cleanRow = cleanRow.map((cell, index) => {
-            const header = headers[index].trim().toUpperCase();
-            if (cell.startsWith('http')) {
-              if (header === 'SUMMARY') {
-                return `<a href="${cell}" target="_blank" class="download-link">Read Here</a>`;
-              } else if (header === 'OFFICIAL DOCUMENT') {
-                return `<a href="${cell}" target="_blank" class="download-link">Download</a>`;
-              }
-            }
-            return cell;
-          });
-
+          while (cleanRow.length < columnCount) cleanRow.push('');
+          if (cleanRow.length > columnCount) cleanRow = cleanRow.slice(0, columnCount);
           return cleanRow;
+        });
+
+        const columnDefs = headers.map((header, index) => {
+          const h = header.trim().toUpperCase();
+          if (h === 'OFFICIAL DOCUMENT') {
+            return {
+              targets: index,
+              render: function (data) {
+                return data.startsWith('http') ? `<a href="${data}" target="_blank" class="download-link">Download</a>` : data;
+              }
+            };
+          } else if (h === 'SUMMARY') {
+            return {
+              targets: index,
+              render: function (data) {
+                return data.startsWith('http') ? `<a href="${data}" target="_blank" class="download-link">Read Here</a>` : data;
+              }
+            };
+          } else {
+            return { targets: index };
+          }
         });
 
         const theadHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
@@ -184,10 +186,8 @@
 
         const table = $('#gstTable').DataTable({
           data: data,
-          columns: headers.map((h) => ({
-            title: h,
-            orderable: !(h === 'Official Document' || h === 'Summary')
-          })),
+          columns: headers.map(h => ({ title: h })),
+          columnDefs: columnDefs,
           pageLength: 10,
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
           dom: 't<"bottom-controls"l i>p',
