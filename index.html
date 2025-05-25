@@ -77,19 +77,27 @@
       display: none !important;
     }
 
-    .dataTables_wrapper .bottom-controls {
+    /* ✅ ALIGN bottom controls properly */
+    .bottom-controls {
       display: flex;
       justify-content: space-between;
-      align-items: center; /* fixed alignment */
-      margin-top: 20px;
+      align-items: center;
       flex-wrap: wrap;
       gap: 10px;
+      margin-top: 20px;
     }
 
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_info {
-      margin: 0;
+    .dataTables_length,
+    .dataTables_info {
       font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ✅ Center pagination */
+    .dataTables_paginate {
+      text-align: center !important;
+      width: 100%;
+      margin-top: 15px;
     }
 
     /* Optional: Increase Date column width */
@@ -171,15 +179,16 @@
 
         const table = $('#gstTable').DataTable({
           data: data,
-          columns: headers.map((h, index) => {
-            if (h === 'Official Document' || h === 'Summary') {
-              return { title: h, orderable: false }; // Disable sort here
-            }
-            return { title: h };
-          }),
+          columns: headers.map((h) => ({
+            title: h,
+            orderable: !(h === 'Official Document' || h === 'Summary')
+          })),
           pageLength: 10,
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-          dom: 't<"bottom-controls"li>p'
+          dom: 't<"bottom-controls"l i>p',
+          drawCallback: function () {
+            $('.dataTables_paginate').appendTo('.bottom-controls'); // move pagination inside flex container
+          }
         });
 
         if (headers.length >= 5) {
