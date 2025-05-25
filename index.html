@@ -73,12 +73,6 @@
       text-decoration: underline;
     }
 
-    #gstTable th:nth-child(5),
-    #gstTable td:nth-child(5) {
-      min-width: 150px;
-      white-space: nowrap;
-    }
-
     div.dataTables_filter {
       display: none !important;
     }
@@ -147,11 +141,11 @@
         const headers = rows[0];
         const data = rows.slice(1).map(row => {
           const newRow = [...row];
-          for (let i = newRow.length - 2; i < newRow.length; i++) {
-            if (newRow[i] && newRow[i].startsWith('http')) {
-              newRow[i] = `<a href="${newRow[i]}" target="_blank" class="download-link">Download</a>`;
+          newRow.forEach((cell, i) => {
+            if (typeof cell === 'string' && cell.startsWith('http')) {
+              newRow[i] = `<a href="${cell}" target="_blank" class="download-link">Download</a>`;
             }
-          }
+          });
           return newRow;
         });
 
@@ -163,31 +157,24 @@
           columns: headers.map(h => ({ title: h })),
           pageLength: 10,
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-          dom: 't<"bottom-controls"li>p',
-          columnDefs: [
-            {
-              targets: 4,
-              width: '150px'
-            },
-            {
-              targets: [6, 7],
-              orderable: false
-            }
-          ]
+          dom: 't<"bottom-controls"li>p'
         });
 
-        $('#searchParticulars').on('keyup', function () {
-          table.column(1).search(this.value).draw();
-        });
-        $('#searchType').on('keyup', function () {
-          table.column(2).search(this.value).draw();
-        });
-        $('#searchDocNo').on('keyup', function () {
-          table.column(3).search(this.value).draw();
-        });
-        $('#searchDate').on('keyup', function () {
-          table.column(4).search(this.value).draw();
-        });
+        // Conditional search if enough columns exist
+        if (headers.length >= 5) {
+          $('#searchParticulars').on('keyup', function () {
+            table.column(1).search(this.value).draw();
+          });
+          $('#searchType').on('keyup', function () {
+            table.column(2).search(this.value).draw();
+          });
+          $('#searchDocNo').on('keyup', function () {
+            table.column(3).search(this.value).draw();
+          });
+          $('#searchDate').on('keyup', function () {
+            table.column(4).search(this.value).draw();
+          });
+        }
       });
   </script>
 
