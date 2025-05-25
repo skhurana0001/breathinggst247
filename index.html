@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Breathing GST 24×7</title>
+  <title>BREATHING GST 24×7</title>
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
   <style>
     body {
@@ -14,6 +14,7 @@
       text-align: center;
       color: #006400; /* Dark Green */
       margin-bottom: 10px;
+      text-transform: uppercase;
     }
     h3 {
       text-align: center;
@@ -52,7 +53,7 @@
 </head>
 <body>
 
-  <h1>Breathing GST 24×7</h1>
+  <h1>BREATHING GST 24×7</h1>
   <h3>GST With CA Shubham Khurana</h3>
 
   <div id="customSearch">
@@ -81,7 +82,6 @@
         const headers = rows[0];
         const body = rows.slice(1).map(row => {
           const newRow = [...row];
-          // Last 2 columns: convert URLs to "Download" links
           for (let i = newRow.length - 2; i < newRow.length; i++) {
             if (newRow[i] && newRow[i].startsWith('http')) {
               newRow[i] = `<a href="${newRow[i]}" target="_blank" class="download-link">Download</a>`;
@@ -98,19 +98,19 @@
         const table = $('#gstTable').DataTable({
           pageLength: 10,
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
-          dom: 'lfrtip',
+          dom: 'lftip', // ⛔ Removed global search (removed the “f” for filter box)
           initComplete: function () {
             $('#searchParticulars').on('keyup', function () {
-              table.column(1).search(this.value).draw(); // Assuming 1 is "Particulars"
+              table.column(1).search(this.value).draw();
             });
             $('#searchType').on('keyup', function () {
-              table.column(2).search(this.value).draw(); // "Type"
+              table.column(2).search(this.value).draw();
             });
             $('#searchDocNo').on('keyup', function () {
-              table.column(3).search(this.value).draw(); // "Document No."
+              table.column(3).search(this.value).draw();
             });
             $('#searchDate').on('keyup', function () {
-              table.column(4).search(this.value).draw(); // "Date of Issue"
+              table.column(4).search(this.value).draw();
             });
           }
         });
