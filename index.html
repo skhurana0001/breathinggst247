@@ -77,6 +77,7 @@
       display: none !important;
     }
 
+    /* ✅ ALIGN bottom controls properly */
     .bottom-controls {
       display: flex;
       justify-content: space-between;
@@ -92,12 +93,14 @@
       line-height: 1.5;
     }
 
+    /* ✅ Center pagination */
     .dataTables_paginate {
       text-align: center !important;
       width: 100%;
       margin-top: 15px;
     }
 
+    /* Optional: Increase Date column width */
     #gstTable td:nth-child(5), 
     #gstTable th:nth-child(5) {
       min-width: 120px;
@@ -155,30 +158,20 @@
 
         const data = rows.slice(1).map(row => {
           let cleanRow = [...row];
-          while (cleanRow.length < columnCount) cleanRow.push('');
-          if (cleanRow.length > columnCount) cleanRow = cleanRow.slice(0, columnCount);
-          return cleanRow;
-        });
 
-        const columnDefs = headers.map((header, index) => {
-          const h = header.trim().toUpperCase();
-          if (h === 'OFFICIAL DOCUMENT') {
-            return {
-              targets: index,
-              render: function (data) {
-                return data.startsWith('http') ? `<a href="${data}" target="_blank" class="download-link">Download</a>` : data;
-              }
-            };
-          } else if (h === 'SUMMARY') {
-            return {
-              targets: index,
-              render: function (data) {
-                return data.startsWith('http') ? `<a href="${data}" target="_blank" class="download-link">Read Here</a>` : data;
-              }
-            };
-          } else {
-            return { targets: index };
+          while (cleanRow.length < columnCount) {
+            cleanRow.push('');
           }
+
+          if (cleanRow.length > columnCount) {
+            cleanRow = cleanRow.slice(0, columnCount);
+          }
+
+          cleanRow = cleanRow.map(cell =>
+            cell.startsWith('http') ? `<a href="${cell}" target="_blank" class="download-link">Download</a>` : cell
+          );
+
+          return cleanRow;
         });
 
         const theadHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
@@ -186,13 +179,15 @@
 
         const table = $('#gstTable').DataTable({
           data: data,
-          columns: headers.map(h => ({ title: h })),
-          columnDefs: columnDefs,
+          columns: headers.map((h) => ({
+            title: h,
+            orderable: !(h === 'Official Document' || h === 'Summary')
+          })),
           pageLength: 10,
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
           dom: 't<"bottom-controls"l i>p',
           drawCallback: function () {
-            $('.dataTables_paginate').appendTo('.bottom-controls');
+            $('.dataTables_paginate').appendTo('.bottom-controls'); // move pagination inside flex container
           }
         });
 
