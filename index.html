@@ -18,14 +18,18 @@
     h3 {
       text-align: center;
       color: #555;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
     #customSearch {
       margin-bottom: 20px;
       display: flex;
       justify-content: center;
-      gap: 10px;
       flex-wrap: wrap;
+      gap: 10px;
+    }
+    input[type="text"] {
+      padding: 6px;
+      font-size: 14px;
     }
     #gstTable {
       width: 100%;
@@ -38,11 +42,11 @@
     th, td {
       padding: 10px;
       text-align: left;
+      vertical-align: top;
     }
     .download-link {
       color: #007bff;
       text-decoration: underline;
-      cursor: pointer;
     }
   </style>
 </head>
@@ -66,25 +70,28 @@
     const sheetURL = 'https://docs.google.com/spreadsheets/d/12qZH5ziAay-l2jyOqg-4jcCivKvaJtLumwgTBn-Ipr0/gviz/tq?tqx=out:csv';
 
     fetch(sheetURL)
-      .then(response => response.text())
-      .then(data => {
-        const rows = data.trim().split('\n').map(row => row.replace(/(^"|"$)/g, '').split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/));
-        const headers = rows[0];
-        const body = rows.slice(1);
+      .then(res => res.text())
+      .then(csv => {
+        const rows = csv.trim().split('\n').map(row =>
+          row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(cell =>
+            cell.replace(/^"|"$/g, '')
+          )
+        );
 
-        // Format last 2 columns as "Download" links if they are valid URLs
-        const formattedBody = body.map(row => {
+        const headers = rows[0];
+        const body = rows.slice(1).map(row => {
           const newRow = [...row];
-          for (let i = row.length - 2; i < row.length; i++) {
-            if (row[i] && row[i].startsWith('http')) {
-              newRow[i] = `<a href="${row[i]}" target="_blank" class="download-link">Download</a>`;
+          // Last 2 columns: convert URLs to "Download" links
+          for (let i = newRow.length - 2; i < newRow.length; i++) {
+            if (newRow[i] && newRow[i].startsWith('http')) {
+              newRow[i] = `<a href="${newRow[i]}" target="_blank" class="download-link">Download</a>`;
             }
           }
           return newRow;
         });
 
         let tableHTML = '<thead><tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr></thead>';
-        tableHTML += '<tbody>' + formattedBody.map(row => '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>').join('') + '</tbody>';
+        tableHTML += '<tbody>' + body.map(row => '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>').join('') + '</tbody>';
 
         $('#gstTable').html(tableHTML);
 
@@ -93,18 +100,17 @@
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
           dom: 'lfrtip',
           initComplete: function () {
-            // Custom search filters
             $('#searchParticulars').on('keyup', function () {
-              table.column(0).search(this.value).draw();
+              table.column(1).search(this.value).draw(); // Assuming 1 is "Particulars"
             });
             $('#searchType').on('keyup', function () {
-              table.column(1).search(this.value).draw();
+              table.column(2).search(this.value).draw(); // "Type"
             });
             $('#searchDocNo').on('keyup', function () {
-              table.column(2).search(this.value).draw();
+              table.column(3).search(this.value).draw(); // "Document No."
             });
             $('#searchDate').on('keyup', function () {
-              table.column(3).search(this.value).draw();
+              table.column(4).search(this.value).draw(); // "Date of Issue"
             });
           }
         });
