@@ -167,9 +167,9 @@
           cleanRow = cleanRow.map((cell, index) => {
             const header = headers[index];
             if (cell.startsWith('http')) {
-              if (header === 'Summary') {
+              if (header === 'Summary Link') {
                 return `<a href="${cell}" target="_blank" class="download-link">Read Here</a>`;
-              } else if (header === 'Official Document') {
+              } else if (header === 'Official Doc Link') {
                 return `<a href="${cell}" target="_blank" class="download-link">Download</a>`;
               }
             }
@@ -186,7 +186,7 @@
           data: data,
           columns: headers.map((h) => ({
             title: h,
-            orderable: !(h === 'Official Document' || h === 'Summary')
+            orderable: !(h === 'Official Doc Link' || h === 'Summary Link')
           })),
           pageLength: 10,
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
