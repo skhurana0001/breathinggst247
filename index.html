@@ -77,7 +77,6 @@
       display: none !important;
     }
 
-    /* ✅ ALIGN bottom controls properly */
     .bottom-controls {
       display: flex;
       justify-content: space-between;
@@ -93,15 +92,13 @@
       line-height: 1.5;
     }
 
-    /* ✅ Center pagination */
     .dataTables_paginate {
       text-align: center !important;
       width: 100%;
       margin-top: 15px;
     }
 
-    /* Optional: Increase Date column width */
-    #gstTable td:nth-child(5), 
+    #gstTable td:nth-child(5),
     #gstTable th:nth-child(5) {
       min-width: 120px;
     }
@@ -139,9 +136,16 @@
     <tbody></tbody>
   </table>
 
+  <!-- JavaScript Libraries -->
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script src="https://cdn.datatables.net/plug-ins/1.13.4/sorting/datetime-moment.js"></script>
+
   <script>
+    // Register moment date sorting for DD/MM/YYYY
+    $.fn.dataTable.moment('DD/MM/YYYY');
+
     const sheetURL = 'https://docs.google.com/spreadsheets/d/12qZH5ziAay-l2jyOqg-4jcCivKvaJtLumwgTBn-Ipr0/gviz/tq?tqx=out:csv';
 
     fetch(sheetURL)
@@ -183,11 +187,12 @@
             title: h,
             orderable: !(h === 'Official Document' || h === 'Summary')
           })),
+          order: [[4, 'desc']], // Sort Date column (index 4) descending
           pageLength: 10,
           lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
           dom: 't<"bottom-controls"l i>p',
           drawCallback: function () {
-            $('.dataTables_paginate').appendTo('.bottom-controls'); // move pagination inside flex container
+            $('.dataTables_paginate').appendTo('.bottom-controls');
           }
         });
 
