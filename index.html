@@ -110,8 +110,19 @@
       text-align: center !important;
       width: 100%;
       margin-top: 15px;
+      margin-bottom: 40px; /* 👈 Added to avoid being cut off */
     }
 
+    /* 👇 New CSS to limit Date column width */
+    #gstTable td:nth-child(1),
+    #gstTable th:nth-child(1) {
+      width: 100px;
+      max-width: 120px;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    /* Optional: control another wide column if needed */
     #gstTable td:nth-child(5),
     #gstTable th:nth-child(5) {
       min-width: 120px;
